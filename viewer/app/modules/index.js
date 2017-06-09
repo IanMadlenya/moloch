@@ -59,4 +59,3 @@ require('./visualization/components/graph');
 require('./visualization/components/map');
 
 require('./upload/upload');
-require('./upload/upload.service');

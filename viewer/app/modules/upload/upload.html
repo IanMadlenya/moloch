@@ -14,8 +14,6 @@
     </div>
   </div>
 
-  <!-- TODO display uploading indicator -->
-
   <!-- upload form -->
   <form class="container-fluid form-horizontal margined-bottom-xxxxlg margined-top-xxxxlg">
 
@@ -23,8 +21,18 @@
     <div class="form-group">
       <label for="file" class="col-md-2 control-label">File</label>
       <div class="col-md-8">
-        <input type="file" class="form-control" name="file" id="file"
-          fileread="$ctrl.file" />
+        <div class="input-group">
+          <input type="file" nv-file-select uploader="$ctrl.uploader"
+            name="file" id="file" class="form-control" />
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button"
+              ng-disabled="!$ctrl.uploader.queue[0]"
+              ng-click="$ctrl.remove()">
+              <span class="fa fa-trash-o"></span>&nbsp;
+              Remove
+            </button>
+          </span>
+        </div>
       </div>
     </div> <!-- /file -->
 
@@ -40,10 +48,23 @@
     <!-- submit btn -->
     <div class="form-group">
       <div class="col-md-10">
-        <button class="btn btn-theme-primary pull-right" type="submit"
+        <button class="btn btn-theme-primary pull-right margined-left" type="submit"
+          ng-disabled="!$ctrl.uploader.queue[0]"
           ng-click="$ctrl.upload()">
-          <span class="fa fa-upload"></span>&nbsp;
-          Upload
+          <span ng-if="!$ctrl.uploading">
+            <span class="fa fa-upload"></span>&nbsp;
+            Upload
+          </span>
+          <span ng-if="$ctrl.uploading">
+            <span class="fa fa-spinner fa-spin"></span>&nbsp;
+            Uploading...
+          </span>
+        </button>
+        <button class="btn btn-warning pull-right" type="submit"
+          ng-disabled="!$ctrl.uploader.queue[0].isUploading"
+          ng-click="$ctrl.cancel()">
+          <span class="fa fa-ban"></span>&nbsp;
+          Cancel
         </button>
       </div>
     </div> <!-- /submit btn -->

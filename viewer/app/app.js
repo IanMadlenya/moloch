@@ -8,6 +8,7 @@
   require('angular-animate');
   require('angular-resource');
   require('angular-sanitize');
+  require('angular-file-upload');
   require('angular-ui-bootstrap');
   require('angular-bind-notifier');
   require('angular-bootstrap-colorpicker');
@@ -29,6 +30,7 @@
     // angular dependencies
     'ngResource', 'ngRoute', 'ui.bootstrap', 'ngAnimate', 'colorpicker.module',
     'angular.filter', 'ngDraggable', 'ngSanitize', 'angular.bind.notifier',
+    'angularFileUpload',
 
     // custom directives
     'directives.navbar', 'directives.footer',

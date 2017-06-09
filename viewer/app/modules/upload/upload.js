@@ -12,40 +12,52 @@
 
     /**
      * Initialize global variables for this controller
-     * @param UploadService Uploads a pcap to the server
+     * @param FileUploader angular-file-upload module
+     *                     github.com/nervgh/angular-file-upload
      *
      * @ngInject
      */
-    constructor(UploadService) {
-      this.UploadService = UploadService;
+    constructor(FileUploader) {
+      this.FileUploader = FileUploader;
     }
 
     /* Callback when component is mounted and ready */
-    $onInit() {}
+    $onInit() {
+      this.uploader = new this.FileUploader({ url: 'upload2' });
+      
+      this.uploader.onCompleteItem = () => {
+        this.uploading = false;
+        this.remove();
+      };
+    }
 
     upload() {
-      // TODO form validation
-
       this.uploading = true;
 
-      this.UploadService.upload(this.file, this.tag)
-        .then((response) => {
-          this.uploading = false;
-          // display success message to user
-          this.msg = response.text;
-          this.msgType = 'success';
-        })
-        .catch((error) => {
-          this.uploading = false;
-          // display success message to user
-          this.msg = error;
-          this.msgType = 'danger';
-        });
+      let file = this.uploader.queue[0];
+
+      if (file) {
+        file.formData.push({ tag: this.tag }); // add tag to upload
+        file.upload();
+      }
+    }
+
+    cancel() {
+      if (this.uploader.queue[0]) {
+        this.uploader.queue[0].cancel();
+      }
+    }
+
+    remove() {
+      if (this.uploader.queue[0]) {
+        this.uploader.queue[0].remove();
+        angular.element('input[type="file"]').val(null);
+      }
     }
 
   }
 
-  UploadController.$inject = ['UploadService'];
+  UploadController.$inject = ['FileUploader'];
 
   /**
    * Moloch Upload Directive
@@ -55,23 +67,6 @@
     .component('molochUpload', {
       template  : require('html!./upload.html'),
       controller: UploadController
-    })
-
-  .directive('fileread', [function () {
-    return {
-      scope: { fileread: '=' },
-      link: function (scope, element) {
-        element.bind('change', function (changeEvent) {
-          let reader = new FileReader();
-          reader.onload = (loadEvent) => {
-            scope.$apply(function () {
-              scope.fileread = loadEvent.target.result;
-            });
-          };
-          reader.readAsDataURL(changeEvent.target.files[0]);
-        });
-      }
-    };
-  }]);
+    });
 
 })();

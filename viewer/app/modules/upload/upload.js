@@ -23,7 +23,7 @@
 
     /* Callback when component is mounted and ready */
     $onInit() {
-      this.uploader = new this.FileUploader({ url: 'upload2' });
+      this.uploader = new this.FileUploader({ url: 'upload' });
       
       this.uploader.onCompleteItem = () => {
         this.uploading = false;

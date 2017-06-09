@@ -5786,7 +5786,7 @@ app.post('/sendSessions', function(req, res) {
   }
 });
 
-app.post('/upload2', multer({dest:'/tmp'}).single('file'), function (req, res, next) {
+app.post('/upload', multer({dest:'/tmp'}).single('file'), function (req, res) {
   var exec = require('child_process').exec,
      child;
 

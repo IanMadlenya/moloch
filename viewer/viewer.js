@@ -1930,7 +1930,7 @@ function buildSessionQuery(req, buildCb) {
   if (req.query.facets) {
     query.aggregations = {mapG1: {terms: {field: "g1", size:1000, min_doc_count:1}},
                           mapG2: {terms: {field: "g2", size:1000, min_doc_count:1}}};
-    query.aggregations.dbHisto = {aggregations: {db : {sum: {field:"db"}}, db1: {sum: {field:"db1"}}, db2: {sum: {field:"db2"}}, pa: {sum: {field:"pa"}}, pa1: {sum: {field:"pa1"}}, pa2: {sum: {field:"pa2"}}}};
+    query.aggregations.dbHisto = {aggregations: {db1: {sum: {field:"db1"}}, db2: {sum: {field:"db2"}}, pa1: {sum: {field:"pa1"}}, pa2: {sum: {field:"pa2"}}}};
 
     switch (req.query.bounding) {
     case "first":
@@ -2515,10 +2515,8 @@ function mapMerge(aggregations) {
 function graphMerge(req, query, aggregations) {
   var graph = {
     lpHisto: [],
-    dbHisto: [],
     db1Histo: [],
     db2Histo: [],
-    paHisto: [],
     pa1Histo: [],
     pa2Histo: [],
     xmin: req.query.startTime * 1000|| null,
@@ -2535,10 +2533,8 @@ function graphMerge(req, query, aggregations) {
     aggregations.dbHisto.buckets.forEach(function (item) {
       var key = item.key;
       graph.lpHisto.push([key, item.doc_count]);
-      graph.paHisto.push([key, item.pa.value]);
       graph.pa1Histo.push([key, item.pa1.value]);
       graph.pa2Histo.push([key, item.pa2.value]);
-      graph.dbHisto.push([key, item.db.value]);
       graph.db1Histo.push([key, item.db1.value]);
       graph.db2Histo.push([key, item.db2.value]);
     });
@@ -2546,10 +2542,8 @@ function graphMerge(req, query, aggregations) {
     aggregations.dbHisto.buckets.forEach(function (item) {
       var key = item.key*1000;
       graph.lpHisto.push([key, item.doc_count]);
-      graph.paHisto.push([key, item.pa.value]);
       graph.pa1Histo.push([key, item.pa1.value]);
       graph.pa2Histo.push([key, item.pa2.value]);
-      graph.dbHisto.push([key, item.db.value]);
       graph.db1Histo.push([key, item.db1.value]);
       graph.db2Histo.push([key, item.db2.value]);
     });
@@ -2876,8 +2870,8 @@ app.get('/spigraph.json', function(req, res) {
             var graph = r.graph;
             for (var i = 0; i < graph.lpHisto.length; i++) {
               r.lpHisto += graph.lpHisto[i][1];
-              r.dbHisto += graph.dbHisto[i][1];
-              r.paHisto += graph.paHisto[i][1];
+              r.dbHisto += graph.db1Histo[i][1] + graph.db2Histo[i][1];
+              r.paHisto += graph.pa2Histo[i][1] + graph.pa2Histo[i][1];
             }
             if (results.items.length === result.responses.length) {
               var s = req.query.sort || "lpHisto";
